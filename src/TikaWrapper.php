@@ -1,7 +1,5 @@
 <?php
 
-namespace Enzim\Lib\TikaWrapper;
-
 use Symfony\Component\Process\Process;
 
 class TikaWrapper {
@@ -14,11 +12,10 @@ class TikaWrapper {
      */
     private static function run($option, $fileName){
         $file = new SplFileInfo($fileName);
-        $tikaPath = vendor_path();
-        $shellCommand = 'java -jar tika-app-1.5.jar ' . $option . ' "' . $file->getRealPath() . '"';
+        $shellCommand = 'java -jar tika-app-1.8.jar ' . $option . ' "' . $file->getRealPath() . '"';
 
         $process = new Process($shellCommand);
-        $process->setWorkingDirectory($tikaPath);
+        $process->setWorkingDirectory(VENDOR_PATH);
         $process->run();
 
         if (!$process->isSuccessful()) {

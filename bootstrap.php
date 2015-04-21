@@ -1,11 +1,18 @@
 <?php
-include  __DIR__ . '/tests/TikaWrapperTest.php';
-include  __DIR__ . '/src/TikaWrapper.php';
+define("ROOT_PATH", dirname(__FILE__));
+define("SRC_PATH", dirname(__FILE__) . "/src/");
+define("TEST_FILES_PATH", dirname(__FILE__) . "/tests/test_files/");
+define("VENDOR_PATH", dirname(__FILE__) . "/vendor/");
+require_once ROOT_PATH . '/vendor/autoload.php';
 
-function test_files_path(){
-    return __DIR__ . '/tests/test_files/';
+function loadClass($path, $className){
+    $classFullPath = $path . '/' . $className . '.php';
+    if(file_exists($classFullPath)) {
+        include_once($classFullPath);
+        return true;
+    }
 }
 
-function vendor_path(){
-    return __DIR__ . '/vendor/';
-}
+spl_autoload_register(function ($class) {
+    return loadClass(SRC_PATH, $class);
+});
