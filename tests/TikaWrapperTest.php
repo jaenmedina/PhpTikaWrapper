@@ -147,4 +147,26 @@ class TikaWrapperTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('application/vnd.oasis.opendocument.text', $docType4);
     }
 
+    public function testTikaServerStartsAndAcceptsData(){
+        $portNumber = 12347;
+        $fileToParse = TEST_FILES_PATH . 'sample1.txt';
+        $tikaWrapper = new TikaWrapper();
+
+        $tikaWrapper->startServer($portNumber);
+        $command = 'nc 127.0.0.1 ' . $portNumber . ' <  ' . $fileToParse;
+        exec($command, $output);
+        $tikaWrapper->stopServer();
+
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><html xmlns="http://www.w3.org/1999/xhtml">', $output[0]);
+        $this->assertEquals('<head>', $output[1]);
+        $this->assertEquals('<meta name="Content-Encoding" content="ISO-8859-1"/>', $output[2]);
+        $this->assertEquals('<meta name="X-Parsed-By" content="org.apache.tika.parser.DefaultParser"/>', $output[3]);
+        $this->assertEquals('<meta name="X-Parsed-By" content="org.apache.tika.parser.txt.TXTParser"/>', $output[4]);
+        $this->assertEquals('<meta name="Content-Type" content="text/plain; charset=ISO-8859-1"/>', $output[5]);
+        $this->assertEquals('<title/>', $output[6]);
+        $this->assertEquals('</head>', $output[7]);
+        $this->assertEquals('<body><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam blandit blandit augue, eu tristique arcu tincidunt et.</p>', $output[8]);
+        $this->assertEquals('</body></html>', $output[9]);
+    }
+
 }

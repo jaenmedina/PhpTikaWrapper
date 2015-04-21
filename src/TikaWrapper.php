@@ -5,6 +5,11 @@ use Symfony\Component\Process\Process;
 class TikaWrapper {
 
     /**
+     * @var Symfony\Component\Process\Process
+     */
+    protected $serverProcess;
+
+    /**
      * @param string $option
      * @param string $fileName
      * @return string
@@ -23,6 +28,25 @@ class TikaWrapper {
         }
 
         return $process->getOutput();
+    }
+
+    /**
+     * @param int $portNumber
+     * @return string
+     */
+    public function startServer($portNumber){
+        $shellCommand = 'java -jar tika-app-1.8.jar --server ' . $portNumber ;
+        $this->serverProcess = new Process($shellCommand);
+        $this->serverProcess->setWorkingDirectory(VENDOR_PATH);
+        $this->serverProcess->start();
+    }
+
+    public function stopServer(){
+        $this->serverProcess->stop();
+    }
+
+    public function __destruct(){
+        $this->stopServer();
     }
 
     /**
