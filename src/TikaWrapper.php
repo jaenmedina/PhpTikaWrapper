@@ -10,6 +10,11 @@ class TikaWrapper {
     protected $serverProcess;
 
     /**
+     * @var int
+     */
+    protected $portNumber;
+
+    /**
      * @param string $option
      * @param string $fileName
      * @return string
@@ -35,6 +40,7 @@ class TikaWrapper {
      * @return string
      */
     public function startServer($portNumber){
+        $this->portNumber = $portNumber;
         $shellCommand = 'java -jar tika-app-1.8.jar --server ' . $portNumber ;
         $this->serverProcess = new Process($shellCommand);
         $this->serverProcess->setWorkingDirectory(VENDOR_PATH);
@@ -43,6 +49,18 @@ class TikaWrapper {
 
     public function stopServer(){
         $this->serverProcess->stop();
+    }
+
+    /**
+     * @param string $file
+     * @return string
+     * @warning Curl can't be used because this version of tika does not support HTTP.
+     */
+    public function parseFileInServer($file){
+        $netcatCommand = 'nc 127.0.0.1 ' . $this->portNumber . ' < ' . $file;
+        exec($netcatCommand, $output);
+        $result = simplexml_load_string(implode('', $output));
+        return $result;
     }
 
     public function __destruct(){

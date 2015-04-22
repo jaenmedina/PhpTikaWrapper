@@ -169,4 +169,23 @@ class TikaWrapperTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('</body></html>', $output[9]);
     }
 
+    public function testParseFileInServer(){
+        $portNumber = 12345;
+        $fileToParse = TEST_FILES_PATH . 'sample1.txt';
+        $tikaWrapper = new TikaWrapper();
+        $tikaWrapper->startServer($portNumber);
+
+        $result = $tikaWrapper->parseFileInServer($fileToParse);
+
+        $tikaWrapper->stopServer();
+        $this->assertEquals('Content-Encoding', $result->head->meta[0]->attributes()[0]);
+        $this->assertEquals('ISO-8859-1', $result->head->meta[0]->attributes()[1]);
+        $this->assertEquals('X-Parsed-By', $result->head->meta[1]->attributes()[0]);
+        $this->assertEquals('org.apache.tika.parser.DefaultParser', $result->head->meta[1]->attributes()[1]);
+        $this->assertEquals('X-Parsed-By', $result->head->meta[2]->attributes()[0]);
+        $this->assertEquals('org.apache.tika.parser.txt.TXTParser', $result->head->meta[2]->attributes()[1]);
+        $this->assertEquals('Content-Type', $result->head->meta[3]->attributes()[0]);
+        $this->assertEquals('text/plain; charset=ISO-8859-1', $result->head->meta[3]->attributes()[1]);
+    }
+
 }
